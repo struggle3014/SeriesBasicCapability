@@ -1,3 +1,7 @@
+
+
+![name_code](https://gitee.com/struggle3014/picBed/raw/master/name_code.png)
+
 # 导读
 
 本文简述 Synchronized 关键字，从以下几个方面介绍：

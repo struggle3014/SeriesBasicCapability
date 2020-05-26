@@ -1,8 +1,12 @@
+![name_code](https://gitee.com/struggle3014/picBed/raw/master/name_code.png)
+
 # 导读
 
 基础能力是程序员的必备能力，为了系统化自己的基础能力，在此进行全面梳理。
 
 **持续更新中~**
+
+
 
 # 目录
 
@@ -25,7 +29,11 @@
 
 ## 3 `JVM` 系列
 
+| Markdown                 | 思维导图                            |
+| ------------------------ | ----------------------------------- |
+| [JVM](./docs/JVM/JVM.md) | [JVM](./docs/MindMapping/JVM.xmind) |
 
+![JVM](https://gitee.com/struggle3014/picBed/raw/master/JVM.png)
 
 ## 4 搜索服务系列
 
