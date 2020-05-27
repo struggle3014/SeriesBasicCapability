@@ -42,19 +42,13 @@
 
 ##### 1.1.2.1 什么是缓存行数据不一致性问题
 
-![缓存行](https://gitee.com/struggle3014/picBed/raw/master/缓存行.png)
+
+
+![缓存行](https://gitee.com/struggle3014/picBed/raw/master/高速缓存层次结构.png)
 
 <div align="center"><font size="2">缓存行数据不一致性问题</font></div>
 
-// TODO ...
-
-https://blog.csdn.net/lpf463061655/article/details/105719924/
-
-深入理解计算机系统：p474
-
-
-
-如果多个 CPU 对内存中的缓存行数据进行修改操作，此时会造成数据不一致问题。
+如果多个 Core 对内存中的缓存行数据进行修改操作，此时会造成数据不一致问题。
 
 
 
