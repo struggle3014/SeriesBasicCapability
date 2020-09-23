@@ -1,32 +1,43 @@
 
 
-![name_code](https://gitee.com/struggle3014/picBed/raw/master/name_code.png)
+<div align="center"><img src="https://gitee.com/struggle3014/picBed/raw/master/name_code.png"></div>
 
 # 导读
 
-本文简述 Synchronized 关键字，从以下几个方面介绍：
+本文简述 **Synchronized** 关键字。
 
-* 前置知识
-
-* Synchronized 横切面讲解
-
-* 锁升级过程
-
-* 锁消除
-
-* 锁粗化
-
-* 锁降级
-
-
-
-**持续更新中~**
+***持续更新中~***
 
 
 
 # 目录
 
-[TOC]
+<nav>
+<a href='#导读' style='text-decoration:none;font-weight:bolder'>导读</a><br/>
+<a href='#目录' style='text-decoration:none;font-weight:bolder'>目录</a><br/>
+<a href='#正文' style='text-decoration:none;font-weight:bolder'>正文</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href='#1 前置知识' style='text-decoration:none;${border-style}'>1 前置知识</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href='#1.1 用户态和内核态' style='text-decoration:none;${border-style}'>1.1 用户态和内核态</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href='#1.2 CAS' style='text-decoration:none;${border-style}'>1.2 CAS</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href='#1.3 Unsafe' style='text-decoration:none;${border-style}'>1.3 Unsafe</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href='#1.4 Markword' style='text-decoration:none;${border-style}'>1.4 Markword</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href='#1.5 JOL 工具(Java Object Layout)' style='text-decoration:none;${border-style}'>1.5 JOL 工具(Java Object Layout)</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href='#2 Synchronzied 橫切面讲解' style='text-decoration:none;${border-style}'>2 Synchronzied 橫切面讲解</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href='#2.1 Java 源码层级' style='text-decoration:none;${border-style}'>2.1 Java 源码层级</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href='#2.2 Java 字节码层级' style='text-decoration:none;${border-style}'>2.2 Java 字节码层级</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href='#2.3 JVM 层级（Hotspot）' style='text-decoration:none;${border-style}'>2.3 JVM 层级（Hotspot）</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href='#2.4 操作系统和硬件层级' style='text-decoration:none;${border-style}'>2.4 操作系统和硬件层级</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href='#3 锁升级过程' style='text-decoration:none;${border-style}'>3 锁升级过程</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href='#3.1 JDK8 markword 实现表' style='text-decoration:none;${border-style}'>3.1 JDK8 markword 实现表</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href='#3.2 锁升级' style='text-decoration:none;${border-style}'>3.2 锁升级</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href='#3.3 锁重入' style='text-decoration:none;${border-style}'>3.3 锁重入</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href='#3.4 Synchronized VS Lock(CAS)' style='text-decoration:none;${border-style}'>3.4 Synchronized VS Lock(CAS)</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href='#4 锁消除(lock eliminate)' style='text-decoration:none;${border-style}'>4 锁消除(lock eliminate)</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href='#5 锁粗化(lock coarsening)' style='text-decoration:none;${border-style}'>5 锁粗化(lock coarsening)</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href='#6 锁降级' style='text-decoration:none;${border-style}'>6 锁降级</a><br/>
+<a href='#总结' style='text-decoration:none;font-weight:bolder'>总结</a><br/>
+<a href='#参考文献' style='text-decoration:none;font-weight:bolder'>参考文献</a><br/>
+</nav>
 
 # 正文
 
@@ -61,37 +72,37 @@ _start:
 
 
 
-### 1.2 `CAS`
+### 1.2 CAS
 
 ![cas](https://gitee.com/struggle3014/picBed/raw/master/cas.png)
 
 <div align="center"><font size="2">CAS 内部实现</font></div>
 
-`CAS` 即 `Compare And Swap`（`Compare And Exchange` / `Compare And Set`） / 自旋 / 自旋锁 / 无锁（无重量锁）。因为经常配合循环操作，直到完成为止，所以泛指一类操作。
+CAS 即 Compare And Swap（Compare And Exchange / Compare And Set） / 自旋 / 自旋锁 / 无锁（无重量锁）。因为经常配合循环操作，直到完成为止，所以泛指一类操作。
 
-`cas(v, a, b) ` 变量 v，期待值 a，修改值 b。
+cas(v, a, b)  变量 v，期待值 a，修改值 b。
 
 
 
 #### 1.2.1 自旋
 
-自旋就是一直在空转等待，一直等到 `CAS` 操作成功为止。
+自旋就是一直在空转等待，一直等到 CAS 操作成功为止。
 
 
 
-#### 1.2.2 `ABA` 问题
+#### 1.2.2 ABA 问题
 
 形象化解释：你的女朋友离开你的时间中经历了别人。
 
-如何解决：版本号 `AtomicStampedReference`，基础类型简单值不需要版本号。
+如何解决：版本号 AtomicStampedReference，基础类型简单值不需要版本号。
 
 
 
 ### 1.3 Unsafe
 
-跟踪 `CAS` 调用链，我们以 `JDK 1.8` 的 `AtomicInteger` 的 `incrementAndGet` 方法为例，进行跟踪：
+跟踪 CAS 调用链，我们以 JDK 1.8 的 AtomicInteger 的 incrementAndGet 方法为例，进行跟踪：
 
-`Step1`：`java.util.concurrent.atomic.AtomicInteger` 的 `incrementAndGet` 方法
+Step1：java.util.concurrent.atomic.AtomicInteger 的 incrementAndGet 方法
 
 ```java
 /**
@@ -104,7 +115,7 @@ public final int incrementAndGet() {
 }
 ```
 
-`Step2`：`sun.misc.Unsafe` 的 `getAndAddInt` 方法
+Step2：sun.misc.Unsafe 的 getAndAddInt 方法
 
 ```java
 public final int getAndAddInt(Object var1, long var2, int var4) {
@@ -117,13 +128,13 @@ public final int getAndAddInt(Object var1, long var2, int var4) {
 }
 ```
 
-`Step3`：`sun.misc.Unsafe` 的 `compareAndSwapInt` 方法
+Step3：sun.misc.Unsafe 的 compareAndSwapInt 方法
 
 ```java
 public final native boolean compareAndSwapInt(Object var1, long var2, int var4, int var5);
 ```
 
-`Step4`：`unsafe.cpp`（`jdk8u`）中的 `cmpxchg`，即 `compare and exchange`。
+Step4：unsafe.cpp（jdk8u）中的 cmpxchg，即 compare and exchange。
 
 ```c++
 UNSAFE_ENTRY(jboolean, Unsafe_CompareAndSwapInt(JNIEnv *env, jobject unsafe, jobject obj, jlong offset, jint e, jint x))
@@ -134,7 +145,7 @@ UNSAFE_ENTRY(jboolean, Unsafe_CompareAndSwapInt(JNIEnv *env, jobject unsafe, job
 UNSAFE_END
 ```
 
-`Step5`：`atomic_linux_x86.inline.hpp`（`jdk8u`）`is_MP` = `Multi Processor`
+Step5：atomic_linux_x86.inline.hpp（jdk8u）is_MP = Multi Processor
 
 ```c++
 inline jint     Atomic::cmpxchg    (jint     exchange_value, volatile jint*     dest, jint     compare_value) {
@@ -147,7 +158,7 @@ inline jint     Atomic::cmpxchg    (jint     exchange_value, volatile jint*     
 }
 ```
 
-`Step6`：`os.hpp`（`jdk8u`）`is_MP()`
+Step6：os.hpp（jdk8u）is_MP()
 
 ```c++
 static inline bool is_MP() {
@@ -162,31 +173,31 @@ static inline bool is_MP() {
 }
 ```
 
-`Step7`：`atomic_linux_x86.inline.hpp`
+Step7：atomic_linux_x86.inline.hpp
 
 ```c++
 #define LOCK_IF_MP(mp) "cmp $0, " #mp "; je 1f; lock; 1: "
 ```
 
-`Step8`：最终实现： `cmpxchg` = `cas` 修改变量值
+Step8：最终实现： cmpxchg = cas 修改变量值
 
 ```assembly
 lock cmpxchg 指令
 ```
 
-`Step9`：`lock` 指令在执行后面指令的时候锁定一个北桥信号，不采用锁总线的方式。
+Step9：lock 指令在执行后面指令的时候锁定一个北桥信号，不采用锁总线的方式。
 
 
 
-### 1.4 `Markword`
+### 1.4 Markword
 
-详见 `JVM` 中的 Java 对象内存布局。
+详见 JVM 中的 Java 对象内存布局。
 
 
 
-### 1.5 `JOL` 工具(`Java Object Layout`)
+### 1.5 JOL 工具(Java Object Layout)
 
-`JOL` 可以查看 `Java` 对象内存布局。
+JOL 可以查看 Java 对象内存布局。
 
 ```xml
 <dependencies>
@@ -199,7 +210,7 @@ lock cmpxchg 指令
 </dependencies>
 ```
 
-`markOop.hpp`（`jdk8u`）
+markOop.hpp（jdk8u）
 
 ```c++
 // Bit-format of an object header (most significant first, big endian layout below):
@@ -226,7 +237,7 @@ lock cmpxchg 指令
 
 
 
-## 2 `Synchronzied` 橫切面讲解
+## 2 Synchronzied 橫切面讲解
 
 
 
@@ -255,6 +266,10 @@ public class T02_Sync1 {
 
 
 ### 2.2 Java 字节码层级
+
+* synchronized 修饰方法：ACC_SYNCHRONIZED 访问修饰符
+
+* synchronized 同步语句块：monitorenter monitorexit
 
 ```asm
  0 new #2 <java/lang/Object>
@@ -288,7 +303,9 @@ public class T02_Sync1 {
 
 
 
-### 2.3 `JVM` 层级（`Hotspot`）
+### 2.3 JVM 层级（Hotspot）
+
+C++ 调用了操作系统提供的同步机制。
 
 Java 对象内存布局：
 
@@ -305,7 +322,7 @@ Space losses: 0 bytes internal + 4 bytes external = 4 bytes total
 
 
 
-`interpreterRuntime.cpp` 的 `InterpreterRuntime:: monitorenter` 方法
+interpreterRuntime.cpp 的 InterpreterRuntime:: monitorenter 方法
 
 ```c++
 IRT_ENTRY_NO_ASYNC(void, InterpreterRuntime::monitorenter(JavaThread* thread, BasicObjectLock* elem))
@@ -334,7 +351,7 @@ IRT_END
 
 
 
-`synchronizer.cpp` 的 `revoke_and_rebias` `fast_enter` `slow_enter` 方法
+synchronizer.cpp 的 revoke_and_rebias fast_enter slow_enter 方法
 
 ```c++
 void ObjectSynchronizer::fast_enter(Handle obj, BasicLock* lock, bool attempt_rebias, TRAPS) {
@@ -398,9 +415,15 @@ inflate 方法：膨胀为重量级锁
 
 
 
+### 2.4 操作系统和硬件层级
+
+X86：lock cmpxchg xxx<sup>[[1](https://blog.csdn.net/21aspnet/article/details/88571740)]</sup>
+
+
+
 ## 3 锁升级过程
 
-### 3.1 `JDK8` `markword` 实现表
+### 3.1 JDK8 markword 实现表
 
 64 markword 实现表：
 
@@ -445,7 +468,7 @@ synchronized 优化与 markword 相关，使用 markword 中最低三位表示�
 
    00 -> 轻量级锁
 
-   默认情况下，偏向锁有时延，默认是 4 秒（可通过 `-XX:BaisedLockingStartupDelay` 参数进行设置）。因为，`JVM` 虚拟机有自己一些默认启动的线程，有很多 sync 代码，这些 sync 代码启动时，肯定会有竞争。如果使用偏向锁，就会造成偏向锁不断地进行锁撤销和锁升级的操作，效率较低。
+   默认情况下，偏向锁有时延，默认是 4 秒（可通过 -XX:BaisedLockingStartupDelay 参数进行设置）。因为，JVM 虚拟机有自己一些默认启动的线程，有很多 sync 代码，这些 sync 代码启动时，肯定会有竞争。如果使用偏向锁，就会造成偏向锁不断地进行锁撤销和锁升级的操作，效率较低。
 
    ```shell
    -XX:BaisedLockingStartupDelay=0
@@ -513,17 +536,17 @@ synchronized 是可重入锁
 
 
 
-### 3.4 `Synchronized` VS `Lock`(`CAS`)
+### 3.4 Synchronized VS Lock(CAS)
 
-在高争用、高耗时的环境下 `synchronized` 效率更高
- 在低争用 低耗时的环境下 `CAS` 效率更高
+在高争用、高耗时的环境下 synchronized 效率更高
+ 在低争用 低耗时的环境下 CAS 效率更高
 
-* `synchronized` 到重量级之后是等待队列（不消耗 `CPU`）
-* `CAS`（等待期间消耗 `CPU`）
+* synchronized 到重量级之后是等待队列（不消耗 CPU）
+* CAS（等待期间消耗 CPU）
 
 
 
-## 4 锁消除(`lock eliminate`)
+## 4 锁消除(lock eliminate)
 
 ```java
 public void add(String str1,String str2){
@@ -532,11 +555,11 @@ public void add(String str1,String str2){
 }
 ```
 
-`StringBuffer` 是线程安全的，因为它的关键方法都是被 `synchronized` 修饰过的，但我们看上面这段代码，我们会发现，`sb` 这个引用只会在 `append` 方法中使用，不可能被其它线程引用（因为是局部变量，栈私有），因此 `sb` 是不可能共享的资源，`JVM` 会自动消除 `StringBuffer` 对象内部的锁。
+StringBuffer 是线程安全的，因为它的关键方法都是被 synchronized 修饰过的，但我们看上面这段代码，我们会发现，sb 这个引用只会在 append 方法中使用，不可能被其它线程引用（因为是局部变量，栈私有），因此 sb 是不可能共享的资源，JVM 会自动消除 StringBuffer 对象内部的锁。
 
 
 
-## 5 锁粗化(`lock coarsening`)
+## 5 锁粗化(lock coarsening)
 
 ```java
 public String test(String str){
@@ -550,7 +573,7 @@ public String test(String str){
 }
 ```
 
-`JVM` 会检测到这样一连串的操作都对同一个对象加锁（while 循环内 100 次执行 append，没有锁粗化的就要进行 100  次加锁/解锁），此时 `JVM` 就会将加锁的范围粗化到这一连串的操作的外部（比如 while 虚幻体外），使得这一连串操作只需要加一次锁即可。
+JVM 会检测到这样一连串的操作都对同一个对象加锁（while 循环内 100 次执行 append，没有锁粗化的就要进行 100  次加锁/解锁），此时 JVM 就会将加锁的范围粗化到这一连串的操作的外部（比如 while 虚幻体外），使得这一连串操作只需要加一次锁即可。
 
 
 
@@ -571,3 +594,5 @@ public String test(String str){
 [1] [Hotspot 术语汇编](http://openjdk.java.net/groups/hotspot/docs/HotSpotGlossary.html)
 
 [2] [锁降级](https://www.zhihu.com/question/63859501)
+
+[3] [Java 使用字节码和汇编语言同步分析 volatile，synchronized 的底层实现](https://blog.csdn.net/21aspnet/article/details/88571740)
