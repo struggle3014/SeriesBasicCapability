@@ -41,7 +41,7 @@
 | ------------------------------------- | ---------------------------------------------------------- |
 | [Class 文件结构](./Class 文件结构.md) | [Class 文件结构](../docs/MindMapping/Class 文件结构.xmind) |
 
-![Class 文件结构](https://gitee.com/struggle3014/picBed/raw/master/Class 文件结构.png)
+![Class 文件结构](https://gitee.com/struggle3014/picBed/raw/master/Class文件结构.png)
 
 <div align="center"><font size="2">Class 文件结构</font></div>
 
