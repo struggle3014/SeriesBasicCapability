@@ -239,8 +239,6 @@ markOop.hpp（jdk8u）
 
 ## 2 Synchronzied 橫切面讲解
 
-
-
 ### 2.1 Java 源码层级
 
 ```java
@@ -580,6 +578,10 @@ JVM 会检测到这样一连串的操作都对同一个对象加锁（while 循�
 ## 6 锁降级
 
 锁降级参考：https://www.zhihu.com/question/63859501
+
+
+
+## 7 Synchronized 关键字使用
 
 
 
