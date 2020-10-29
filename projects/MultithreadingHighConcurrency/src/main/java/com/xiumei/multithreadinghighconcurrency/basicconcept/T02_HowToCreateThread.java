@@ -1,7 +1,3 @@
-/**
- * 如何创建线程
- * 继承 Thread 类，实现 Runnable 接口
- */
 package com.xiumei.multithreadinghighconcurrency.basicconcept;
 
 /**
@@ -9,7 +5,8 @@ package com.xiumei.multithreadinghighconcurrency.basicconcept;
  * @Email: yue_zhou@xinyan.com
  * @Date: 15:12 2020/5/15
  * @Version: 1.0
- * @Description:
+ * @Description: 如何创建线程
+ * 继承 Thread 类，实现 Runnable 接口
  **/
 public class T02_HowToCreateThread {
 
@@ -28,8 +25,12 @@ public class T02_HowToCreateThread {
     }
 
     public static void main(String[] args) {
+        // 创建线程的两种方式：继承 Thread 类，实现 Runnable 接口
+        // 1，继承 Thread 类
         new MyThread().start();
+        // 2，实现 Runnable 接口
         new Thread(new MyRun()).start();
+        // 3，JDK1.8 Lambda 表达式的写法
         new Thread(() -> {
             System.out.println("Hello Lambda!");
         }).start();

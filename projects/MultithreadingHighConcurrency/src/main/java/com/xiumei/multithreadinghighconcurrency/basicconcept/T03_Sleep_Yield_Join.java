@@ -1,9 +1,3 @@
-/**
- * Thread 中常用方法：
- * sleep
- * yield
- * join
- */
 package com.xiumei.multithreadinghighconcurrency.basicconcept;
 
 /**
@@ -11,16 +5,19 @@ package com.xiumei.multithreadinghighconcurrency.basicconcept;
  * @Email: yue_zhou@xinyan.com
  * @Date: 15:13 2020/5/15
  * @Version: 1.0
- * @Description:
+ * @Description: 线程的常用方法：sleep， yeild， join
  **/
 public class T03_Sleep_Yield_Join {
 
     public static void main(String[] args) {
-//        testSleep();
-//        testYield();
+        testSleep();
+        testYield();
         testJoin();
     }
 
+    /**
+     * 线程 sleep 方法
+     */
     static void testSleep() {
         new Thread(() -> {
             for(int i=0; i<100; i++) {
@@ -34,6 +31,9 @@ public class T03_Sleep_Yield_Join {
         }).start();
     }
 
+    /**
+     * 线程 yield 方法
+     */
     static void testYield() {
         new Thread(() -> {
             for(int i=0; i<100; i++) {
@@ -50,6 +50,9 @@ public class T03_Sleep_Yield_Join {
         }).start();
     }
 
+    /**
+     * 线程 join 方法
+     */
     static void testJoin() {
         Thread t1 = new Thread(() -> {
             for (int i = 0; i < 100; i++) {

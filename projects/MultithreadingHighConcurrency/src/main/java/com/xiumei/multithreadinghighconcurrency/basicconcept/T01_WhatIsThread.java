@@ -1,7 +1,3 @@
-/**
- * 线程的概念
- * 线程是执行调度的基本单位，通俗地理解就是一个程序中不同的执行路径
- */
 package com.xiumei.multithreadinghighconcurrency.basicconcept;
 
 import java.util.concurrent.TimeUnit;
@@ -11,7 +7,8 @@ import java.util.concurrent.TimeUnit;
  * @Email: yue_zhou@xinyan.com
  * @Date: 15:12 2020/5/15
  * @Version: 1.0
- * @Description:
+ * @Description: 什么是线程
+ * 线程是执行调度的基本单位，通俗地理解就是一个程序中不同的执行路径
  **/
 public class T01_WhatIsThread {
 

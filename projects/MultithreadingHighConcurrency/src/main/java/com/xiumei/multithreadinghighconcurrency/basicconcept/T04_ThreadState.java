@@ -1,13 +1,3 @@
-/**
- * 线程状态：
- * NEW
- * RUNNABLE
- * TERMINATED
- * TIMEWAITING
- * WAITING
- * BLOCKED
- * 线程状态迁移具体见笔记中的线程状态迁移图
- */
 package com.xiumei.multithreadinghighconcurrency.basicconcept;
 
 /**
@@ -15,7 +5,9 @@ package com.xiumei.multithreadinghighconcurrency.basicconcept;
  * @Email: yue_zhou@xinyan.com
  * @Date: 15:13 2020/5/15
  * @Version: 1.0
- * @Description:
+ * @Description: 线程状态
+ * 线程的状态：NEW，RUNNABLE, TERMINATED, TIMEWAITING, WAITING, BLOCKED
+ * 线程状态的迁移过程详见笔记
  **/
 public class T04_ThreadState {
 
