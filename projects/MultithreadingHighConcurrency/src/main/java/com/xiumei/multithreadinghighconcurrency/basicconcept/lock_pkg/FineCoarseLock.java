@@ -1,7 +1,3 @@
-/**
- * synchronized 优化（锁的细化和粗化）
- * 同步代码块中的语句越少越好
- */
 package com.xiumei.multithreadinghighconcurrency.basicconcept.lock_pkg;
 
 import java.util.concurrent.TimeUnit;
@@ -11,7 +7,8 @@ import java.util.concurrent.TimeUnit;
  * @Email: yue_zhou@xinyan.com
  * @Date: 21:49 2020/5/19
  * @Version: 1.0
- * @Description:
+ * @Description: 锁优化，锁细化和锁粗化
+ * 同步代码块中的语句越少越好
  **/
 public class FineCoarseLock {
 
