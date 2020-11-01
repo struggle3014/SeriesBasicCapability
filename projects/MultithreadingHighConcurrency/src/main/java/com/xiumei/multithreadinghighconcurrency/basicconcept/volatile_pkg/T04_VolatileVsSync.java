@@ -1,6 +1,3 @@
-/**
- * 对比上一个程序，可以用 synchronized 解决，synchronized 可以保证可见性和原子性，volatile 只能保证可见性
- */
 package com.xiumei.multithreadinghighconcurrency.basicconcept.volatile_pkg;
 
 import java.util.ArrayList;
@@ -11,11 +8,12 @@ import java.util.List;
  * @Email: yue_zhou@xinyan.com
  * @Date: 21:40 2020/5/19
  * @Version: 1.0
- * @Description:
+ * @Description: volatile 保证线程可见性，但不能保证原子性
+ * synchronized 保证可见性和原子性
  **/
 public class T04_VolatileVsSync {
 
-    volatile int count = 0;
+    /*volatile*/ int count = 0;
 
     synchronized void m() {
         for (int i = 0; i < 10000; i++) {

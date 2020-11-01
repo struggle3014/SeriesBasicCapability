@@ -4,59 +4,58 @@
 
 本文介绍 Volatile 关键字。
 
+Java 语言提供一种稍弱的同步机制，即 volatile 变量，用来确保变量的更新操作通知到其他线程。当把线程声明为 volatile 类型后，编译器与运行时都会注意到这个变量是共享的，因此不会将该变量上的操作与其他内存操作一起重排序。volatile 变量不会被缓存在寄存器或者对其他处理器不可见的地方，因此在读取 volatile 类型的变量时总会返回最新写入的值。
+
 ***持续更新中~***
 
 
 
 # 目录
 
-<nav>
-<a href='#导读' style='text-decoration:none;font-weight:bolder'>导读</a><br/>
-<a href='#目录' style='text-decoration:none;font-weight:bolder'>目录</a><br/>
-<a href='#正文' style='text-decoration:none;font-weight:bolder'>正文</a><br/>
-<a href='#总结' style='text-decoration:none;font-weight:bolder'>总结</a><br/>
-<a href='#参考文献' style='text-decoration:none;font-weight:bolder'>参考文献</a><br/>
-</nav>
+
 
 # 正文
 
-volatile 实现细节
+## volatile 作用
 
-* 字节码层面
+* 保证线程可见性
+  * MESI（CPU 缓存一致性协议）
 
-ACC_VOLATILE 访问修饰符
-
-* JVM 层面
-
-StoreStoreBarrier
-
-volatile 写操作
-
-StoreLoadBarrier
+* 禁止指令重排序
 
 
 
-LoadLoadBarrier
+## volatile 注意点
 
-volatile 读操作
+### 保证线程可见性
 
-LoadStoreBarrier
+* 基础类型
 
-* OS 和硬件层面
+  可以保证线程间的可见性。
 
-可通过 hsdis<sup>[[1](https://www.cnblogs.com/xrq730/p/7048693.html)]</sup>（HotSpot Dis Assembler，HotSpot 反汇编） 观察。
+* 引用类型
+
+  引用类型只能保证引用本身的可见性，不能保证内部字段的可见性。
+
+  [VolatileReference](../../../projects/MultithreadingHighConcurrency/src/main/java/com/xiumei/multithreadinghighconcurrency/basicconcept/volatile_pkg/T02_VolatileReference.java)
 
 
 
-保证线程可见性
+### 保证线程可见性，但不能保证原子性
 
-- MESI（CPU 缓存一致性协议）
+[VolatileNotSync](../../../projects/MultithreadingHighConcurrency/src/main/java/com/xiumei/multithreadinghighconcurrency/basicconcept/volatile_pkg/T03_VolatileNotSync.java)
 
-禁止指令重排序
+[VolatileVsSync](../../../projects/MultithreadingHighConcurrency/src/main/java/com/xiumei/multithreadinghighconcurrency/basicconcept/volatile_pkg/T04_VolatileVsSync.java)
 
-- DCL 单例
-- Double Check Lock
-- Mgr06.java
+
+
+## volatile 使用场景
+
+当且仅当满足以下所有条件时，才应该使用 volatile 变量：
+
+* 对变量的写入操作不依赖变量的当前值，或者你能确保只有单个线程更新变量的值。
+* 该变量不会与其他状态变量一起纳入不变性条件中。
+* 在访问变量时不需要加锁。
 
 
 
@@ -66,8 +65,4 @@ LoadStoreBarrier
 
 # 参考文献
 
-[1] [大话处理器，缓存一致性协议之 MESI](https://blog.csdn.net/muxiqingyang/article/details/6615199)
-
-[2] [Java 并发编程实战- Java Concurrency in Practice]()
-
-[3] [就是要你懂 Java 的 volatile 关键字实现原理](https://www.cnblogs.com/xrq730/p/7048693.html)
+[1] [Java 并发编程实战](https://www.99baiduyun.com/baidu/Java并发编程实战)https://www.cnblogs.com/xrq730/p/7048693.html)
